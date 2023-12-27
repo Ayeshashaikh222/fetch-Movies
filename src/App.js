@@ -24,7 +24,10 @@ function App() {
 
   async function fetchMoviesHandler() {
     const response = await fetch("https://swapi.py4e.com/api/films/");
-    const data = response.then((response) => response.json());
+    if(!response.ok){
+      throw new Error("failed to fetch data");
+    }
+    const data = await response.json();
 
     const transformedMovies = data.results.map((movieData) => {
       return {
@@ -43,7 +46,7 @@ function App() {
         <button onClick={fetchMoviesHandler}>Fetch Movies</button>
       </section>
       <section>
-        <MoviesList movies={dummyMovies} />
+        <MoviesList movies={movies} />
       </section>
     </React.Fragment>
   );
