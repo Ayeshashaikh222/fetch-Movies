@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 
 import MoviesList from "./components/MoviesList";
 import "./App.css";
@@ -24,7 +24,7 @@ function App() {
     },
   ];
 
-  async function fetchMoviesHandler() {
+  const fetchMoviesHandler = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
@@ -45,43 +45,54 @@ function App() {
         };
       });
       setMovies(transformedMovies);
-      setIsLoading(false);
+      // setIsLoading(false);
     } catch (error) {
       setError(error.message);
-      setIsLoading(false);
+      // setIsLoading(false);
       // setError(false);
       setTimeout(() => {
         fetchMoviesHandler();
       }, 5000);
     }
-  }
+    setIsLoading(false);
+  }, []);
+
+  useEffect (() => {
+    fetchMoviesHandler();
+  }, [fetchMoviesHandler]);
 
   useEffect(() => {
-    if(isRetrying){
+    if (isRetrying) {
       fetchMoviesHandler();
       setIsRetrying(false);
     }
   }, [isRetrying]);
 
+  const cancelHandler = () => {
+    setIsLoading(false);
+    setError(null);
+    setIsRetrying(false);
+  };
 
-  const cancelHandler =  () => {
-     setIsLoading(false);
-     setError(null);
-     setIsRetrying(false);
+  let content = <p>Found no movies</p>;
+
+  if (movies.length > 0) {
+    content = <MoviesList movies={movies} />;
   }
 
-  let content = <p>Found no movies</p>
-
-  if(movies.length > 0){
-    content = <MoviesList movies={movies} />
+  if (error) {
+    content = (
+      <p>
+        {error}
+        <br />
+        <br />
+        <button onClick={cancelHandler}>Cancel</button>
+      </p>
+    );
   }
 
-  if(error){
-    content = (<p>{error}<br /><br /><button onClick={cancelHandler}>Cancel</button></p>);
-  }
-
-  if(isLoading){
-    content = <p>Loading...</p>
+  if (isLoading) {
+    content = <p>Loading...</p>;
   }
 
   return (
