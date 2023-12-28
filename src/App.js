@@ -7,6 +7,8 @@ function App() {
 
   const [movies, setMovies] = useState([]);
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const dummyMovies = [
     {
       id: 1,
@@ -23,6 +25,7 @@ function App() {
   ];
 
   async function fetchMoviesHandler() {
+    setIsLoading(true);
     const response = await fetch("https://swapi.py4e.com/api/films/");
     if(!response.ok){
       throw new Error("failed to fetch data");
@@ -38,6 +41,7 @@ function App() {
       };
     });
     setMovies(transformedMovies);
+    setIsLoading(false);
   }
 
   return (
@@ -46,7 +50,9 @@ function App() {
         <button onClick={fetchMoviesHandler}>Fetch Movies</button>
       </section>
       <section>
-        <MoviesList movies={movies} />
+      {!isLoading && movies.length > 0 && <MoviesList movies={movies} /> }
+      {!isLoading && movies.length === 0 && <p>Movies not found</p>}
+      {isLoading && <p>Loading...</p>}  
       </section>
     </React.Fragment>
   );
