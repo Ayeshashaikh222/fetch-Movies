@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
-
 import MoviesList from "./components/MoviesList";
 import "./App.css";
+import AddMovies from "./components/AddMovies";
 
 function App() {
   const [movies, setMovies] = useState([]);
@@ -57,7 +57,7 @@ function App() {
     setIsLoading(false);
   }, []);
 
-  useEffect (() => {
+  useEffect(() => {
     fetchMoviesHandler();
   }, [fetchMoviesHandler]);
 
@@ -67,6 +67,10 @@ function App() {
       setIsRetrying(false);
     }
   }, [isRetrying]);
+
+  const addMovieHandler = (movie) => {
+    console.log(movie);
+  }
 
   const cancelHandler = () => {
     setIsLoading(false);
@@ -98,13 +102,11 @@ function App() {
   return (
     <React.Fragment>
       <section>
+        <AddMovies onAddMovie={addMovieHandler} />
+      </section>
+      <section>
         <button onClick={fetchMoviesHandler}>Fetch Movies</button>
       </section>
-      {/* <section>
-        {!isLoading && movies.length > 0 && <MoviesList movies={movies} />}
-        {!isLoading && movies.length === 0 && <p>Movies not found</p>}
-        {isLoading && <p>Loading...</p>}
-      </section> */}
       <section>{content}</section>
     </React.Fragment>
   );
